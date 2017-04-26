@@ -1,0 +1,53 @@
+@(message: String, style: String = "form")
+
+@defining(play.core.PlayVersion.current) { version =>
+
+<link rel="stylesheet" media="screen" href="/@@documentation/resources/style/main.css">
+
+<section id="top">
+    <div class="wrapper">
+        <h1><a href="http://localhost:9000">@message</a></h1>
+    </div>
+</section>
+
+<div id="content" class="wrapper doc">
+    <article>
+
+        <h1>Welcome to Play</h1>
+
+     <form method="POST" action="/addOne">
+         <div>
+             <h3>Name: </h3>
+             <input type="text" id="nameInput"/>
+         </div>
+         <div>
+             <h3>Surname:</h3>
+         <input type="text" id="surnameInput"/>
+         </div>
+         <div>
+             <h3>Biggest Hit:</h3>
+            <input type="text" id="hitInput"/>
+         </div>
+         <br>
+         <input type="submit" id="accept" value="Submit" onclick="return putIn()"/>
+     </form>
+    </article>
+
+    <aside>
+        <h3>Browse</h3>
+       <table border="1" >
+           <tr>
+               <td>Name<td/>
+           </tr>
+           <tr>
+               <td>Surname<td/>
+           </tr>
+           <tr>
+               <td>Hit<td/>
+           </tr>
+       </table>
+
+    </aside>
+
+</div>
+}
