@@ -14,4 +14,7 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # Post method to my controller
 
-POST    /addOne                     controllers.AddController.index
+POST    /addPerson                    controllers.HomeController.addPerson
+
+
+#GET    /getPerson                    controllers.HomeController.getPersons

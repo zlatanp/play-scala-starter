@@ -7,8 +7,8 @@ import play.api.mvc._
 /**
   * Created by zlatan on 26.4.17..
   */
-class AddController @Inject extends Controller{
-  def index = Action {
-    Ok(views.html.index("Successfully added item!"))
+class AddController extends Controller{
+  def add(name: String) = Action {
+    Ok(views.html.index(name))
   }
 }

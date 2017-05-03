@@ -57,7 +57,7 @@ Seq[Any](format.raw/*5.19*/("""
 object index extends index_Scope0.index
               /*
                   -- GENERATED --
-                  DATE: Wed Apr 26 13:16:08 CEST 2017
+                  DATE: Wed May 03 14:18:21 CEST 2017
                   SOURCE: /home/zlatan/Downloads/play-scala-starter-example/app/views/index.scala.html
                   HASH: 15e862f7b532bce382320c6b082530311e3ae984
                   MATRIX: 616->95|728->112|757->308|785->310|811->327|851->329|884->458|916->464|966->493|999->496

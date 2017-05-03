@@ -39,22 +39,20 @@ Seq[Any](format.raw/*1.43*/("""
 
         <h1>Welcome to Play</h1>
 
-     <form method="POST" action="/addOne">
-         <div>
-             <h3>Name: </h3>
-             <input type="text" id="nameInput"/>
-         </div>
-         <div>
-             <h3>Surname:</h3>
-         <input type="text" id="surnameInput"/>
-         </div>
-         <div>
-             <h3>Biggest Hit:</h3>
-            <input type="text" id="hitInput"/>
-         </div>
-         <br>
-         <input type="submit" id="accept" value="Submit" onclick="return putIn()"/>
-     </form>
+        <form action=""""),_display_(/*18.24*/routes/*18.30*/.HomeController.addPerson()),format.raw/*18.57*/("""" method="post">
+            <p>Name</p>
+            <input name="name" type="text">
+            <br>
+            <p>Surname</p>
+            <input name="surname" type="text">
+            <br>
+            <p>Hit</p>
+            <input name="hit" type="text">
+            <br>
+            <button>Add Person</button>
+
+        </form>
+
     </article>
 
     <aside>
@@ -94,11 +92,11 @@ Seq[Any](format.raw/*1.43*/("""
 object form extends form_Scope0.form
               /*
                   -- GENERATED --
-                  DATE: Wed Apr 26 14:48:36 CEST 2017
+                  DATE: Wed May 03 14:18:21 CEST 2017
                   SOURCE: /home/zlatan/Downloads/play-scala-starter-example/app/views/form.scala.html
-                  HASH: 674e6c3efe7462258ab06901dc271bbd87be228a
-                  MATRIX: 532->1|668->42|696->45|743->84|793->97|821->99|1025->278|1052->285
-                  LINES: 20->1|25->1|27->3|27->3|27->3|29->5|33->9|33->9
+                  HASH: 91c5ff62bdb01554dccf6b149d1703b3a9a9df96
+                  MATRIX: 532->1|668->42|696->45|743->84|793->97|821->99|1025->278|1052->285|1223->429|1238->435|1286->462
+                  LINES: 20->1|25->1|27->3|27->3|27->3|29->5|33->9|33->9|42->18|42->18|42->18
                   -- GENERATED --
               */
           

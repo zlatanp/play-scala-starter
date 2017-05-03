@@ -4,7 +4,7 @@
 		module="play-scala_2.11"
 		revision="1.0-SNAPSHOT"
 		status="integration"
-		publication="20170426111705"
+		publication="20170503133939"
 	>
 		<description>
 		play-scala
@@ -52,5 +52,6 @@
 		<dependency org="com.typesafe.play" name="play-cache_2.11" rev="2.5.14" conf="compile->default(compile)"/>
 		<dependency org="com.typesafe.play" name="play-ws_2.11" rev="2.5.14" conf="compile->default(compile)"/>
 		<dependency org="org.scalatestplus.play" name="scalatestplus-play_2.11" rev="2.0.0" conf="test->default(compile)"/>
+		<dependency org="org.reactivemongo" name="play2-reactivemongo_2.11" rev="0.11.14" conf="compile->default(compile)"/>
 	</dependencies>
 </ivy-module>
