@@ -10,21 +10,21 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
 import reactivemongo.play.json.collection.JSONCollection
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json._
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
-
 import reactivemongo.api.ReadPreference
 import reactivemongo.play.json._
-import reactivemongo.play.json.collection.{
-JSONCollection, JsCursor
-}, JsCursor._
+import reactivemongo.play.json.collection.{JSONCollection, JsCursor}
+import JsCursor._
 import reactivemongo.api.Cursor
 import reactivemongo.bson._
 import reactivemongo.api.collections.bson.BSONCollection
+import scala.concurrent.duration._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.util.{Failure, Success}
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -40,7 +40,7 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
    * a path of `/`.
    */
 
-  val collectionF:Future[JSONCollection] = database.map(_.collection[JSONCollection]("artists"))
+  val collectionF: Future[JSONCollection] = database.map(_.collection[JSONCollection]("artists"))
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
@@ -77,13 +77,23 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
   def getPersons = Action.async {
     implicit request =>
 
-      val query  = Json.obj("name" -> "test1")
-      val kursor = collectionF.map(_.find(query).cursor[List[Person]]())
-      val all = kursor.collect[List[Person]] _
 
-      //Future(println(all))
-      Future.successful(Ok(views.html.index(all.toString())))
+      collectionF.onComplete {
+        case Success(personList) =>  val svi = jsonFind(personList)
+        case Failure(exception)  => println("greska")
+      }
+
+
+      //println(all)
+    Future.successful(Ok(views.html.index("ss")))
   }
 
+  def jsonFind(coll: JSONCollection)(implicit ec: ExecutionContext): Unit = {
+    coll.find(Json.obj()).cursor[JsObject](ReadPreference.primary).collect[List]().onComplete{
+      case Success(personList) =>  println(personList)
+      case Failure(exception)  => println("greska")
+    }
+
+  }
 }
 
