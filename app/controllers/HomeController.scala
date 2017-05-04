@@ -21,6 +21,8 @@ import reactivemongo.play.json.collection.{
 JSONCollection, JsCursor
 }, JsCursor._
 import reactivemongo.api.Cursor
+import reactivemongo.bson._
+import reactivemongo.api.collections.bson.BSONCollection
 
 import scala.concurrent.{ExecutionContext, Future}
 /**
@@ -38,7 +40,7 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
    * a path of `/`.
    */
 
-  def collectionF:Future[JSONCollection] = database.map(_.collection[JSONCollection]("artists"))
+  val collectionF:Future[JSONCollection] = database.map(_.collection[JSONCollection]("artists"))
 
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
@@ -70,11 +72,18 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
         }
 
       )
-
-
   }
 
- // def getPersons = Action.async {}
+  def getPersons = Action.async {
+    implicit request =>
 
+      val query  = Json.obj("name" -> "test1")
+      val kursor = collectionF.map(_.find(query).cursor[List[Person]]())
+      val all = kursor.collect[List[Person]] _
+
+      //Future(println(all))
+      Future.successful(Ok(views.html.index(all.toString())))
+  }
 
 }
+

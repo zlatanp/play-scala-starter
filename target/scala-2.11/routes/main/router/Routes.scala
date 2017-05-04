@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/home/zlatan/Downloads/play-scala-starter-example/conf/routes
-// @DATE:Wed May 03 16:20:05 CEST 2017
+// @DATE:Thu May 04 10:35:35 CEST 2017
 
 package router
 
@@ -55,6 +55,7 @@ class Routes(
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """message""", """controllers.AsyncController.message"""),
     ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """assets/""" + "$" + """file<.+>""", """controllers.Assets.versioned(path:String = "/public", file:Asset)"""),
     ("""POST""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """addPerson""", """controllers.HomeController.addPerson"""),
+    ("""GET""", this.prefix + (if(this.prefix.endsWith("/")) "" else "/") + """getPersons""", """controllers.HomeController.getPersons"""),
     Nil
   ).foldLeft(List.empty[(String,String,String)]) { (s,e) => e.asInstanceOf[Any] match {
     case r @ (_,_,_) => s :+ r.asInstanceOf[(String,String,String)]
@@ -147,6 +148,23 @@ class Routes(
     )
   )
 
+  // @LINE:20
+  private[this] lazy val controllers_HomeController_getPersons5_route = Route("GET",
+    PathPattern(List(StaticPart(this.prefix), StaticPart(this.defaultPrefix), StaticPart("getPersons")))
+  )
+  private[this] lazy val controllers_HomeController_getPersons5_invoker = createInvoker(
+    HomeController_0.getPersons,
+    HandlerDef(this.getClass.getClassLoader,
+      "router",
+      "controllers.HomeController",
+      "getPersons",
+      Nil,
+      "GET",
+      """""",
+      this.prefix + """getPersons"""
+    )
+  )
+
 
   def routes: PartialFunction[RequestHeader, Handler] = {
   
@@ -178,6 +196,12 @@ class Routes(
     case controllers_HomeController_addPerson4_route(params) =>
       call { 
         controllers_HomeController_addPerson4_invoker.call(HomeController_0.addPerson)
+      }
+  
+    // @LINE:20
+    case controllers_HomeController_getPersons5_route(params) =>
+      call { 
+        controllers_HomeController_getPersons5_invoker.call(HomeController_0.getPersons)
       }
   }
 }

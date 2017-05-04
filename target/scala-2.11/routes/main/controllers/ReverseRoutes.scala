@@ -1,7 +1,7 @@
 
 // @GENERATOR:play-routes-compiler
 // @SOURCE:/home/zlatan/Downloads/play-scala-starter-example/conf/routes
-// @DATE:Wed May 03 16:20:05 CEST 2017
+// @DATE:Thu May 04 10:35:35 CEST 2017
 
 import play.api.mvc.{ QueryStringBindable, PathBindable, Call, JavascriptLiteral }
 import play.core.routing.{ HandlerDef, ReverseRouteContext, queryString, dynamicString }
@@ -33,6 +33,12 @@ package controllers {
       if (_prefix.endsWith("/")) "" else "/"
     }
 
+  
+    // @LINE:20
+    def getPersons(): Call = {
+      import ReverseRouteContext.empty
+      Call("GET", _prefix + { _defaultPrefix } + "getPersons")
+    }
   
     // @LINE:6
     def index(): Call = {
