@@ -25,3 +25,19 @@ if(!itsOk){
 }
 
 }
+//
+//$(document).ready(function() {
+//	 alert("spreman");
+//	 $.ajax({
+//             type: 'GET',
+//             url: '/getPersons',
+//             dataType: 'json',
+//             success: function(data){
+//             	console.log(data);
+//             },
+//             complete: function(data){
+//                          	console.log(data);
+//                          }
+//
+//     	});
+//	});

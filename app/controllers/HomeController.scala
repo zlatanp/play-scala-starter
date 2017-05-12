@@ -18,11 +18,12 @@ import reactivemongo.api.ReadPreference
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection.{JSONCollection, JsCursor}
 import JsCursor._
+import com.sun.xml.internal.ws.resources.AddressingMessages
 import reactivemongo.api.Cursor
 import reactivemongo.bson._
 import reactivemongo.api.collections.bson.BSONCollection
-import scala.concurrent.duration._
 
+import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.util.{Failure, Success}
 /**
@@ -75,25 +76,60 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
   }
 
   def getPersons = Action.async {
+
     implicit request =>
 
+      var list : String = "d"
 
-      collectionF.onComplete {
-        case Success(personList) =>  val svi = jsonFind(personList)
-        case Failure(exception)  => println("greska")
+    val bla = collectionF.map{ coll =>
+                      val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
+                      val futurePersons : Future[List[Person]] = cursor.collect[List]()
+                      val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
+                        Json.arr(_)
+                      }
+
+                      futurePostsJsonArray.map{ personsjs =>
+                        print(list)
+                      }
+
       }
-
-
-      //println(all)
-    Future.successful(Ok(views.html.index("ss")))
+      Await.result(bla, 5.seconds)
+      Future(Ok(list.toString))
   }
 
-  def jsonFind(coll: JSONCollection)(implicit ec: ExecutionContext): Unit = {
-    coll.find(Json.obj()).cursor[JsObject](ReadPreference.primary).collect[List]().onComplete{
-      case Success(personList) =>  println(personList)
-      case Failure(exception)  => println("greska")
-    }
+  val str = null
+  val str2 = Option(str)
 
-  }
+
+//  def jsAll(collection: JSONCollection): Future[JsArray] = {
+//    type ResultType = JsObject // any type which is provided a `Writes[T]`
+//
+//    collection.find(Json.obj()).cursor[ResultType](ReadPreference.primary).jsArray()
+//  }
+
+//  def getPersons = Action.async {
+//    implicit request =>
+//
+//
+//      collectionF.onComplete {
+//        case Success(personList) =>  val svi = jsonFind(personList)
+//        case Failure(exception)  => println("greska")
+//      }
+//
+//
+//      //println(all)
+//      Future.successful(Ok(views.html.index("ss")))
+//  }
+//
+//  def jsonFind(coll: JSONCollection)(implicit ec: ExecutionContext): Unit = {
+//    coll.find(Json.obj()).cursor[JsObject](ReadPreference.primary).collect[List]().onComplete{
+//      case Success(personList) =>  println(personList)
+//      case Failure(exception)  => println("greska")
+//    }
+//
+//  }
+//}
+
+
 }
 
