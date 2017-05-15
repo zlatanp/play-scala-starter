@@ -26,18 +26,25 @@ if(!itsOk){
 
 }
 //
-//$(document).ready(function() {
-//	 alert("spreman");
-//	 $.ajax({
-//             type: 'GET',
-//             url: '/getPersons',
-//             dataType: 'json',
-//             success: function(data){
-//             	console.log(data);
-//             },
-//             complete: function(data){
-//                          	console.log(data);
-//                          }
-//
-//     	});
-//	});
+$(document).ready(function() {
+    $("#tableWithAll").html('<tr><th>Name</th><th>Surname</th><th>Biggest Hit</th><th>Option</th></tr>');
+	 $.ajax({
+             type: 'GET',
+             url: '/getPersons',
+             dataType: 'json',
+             success: function(data){
+             	console.log(data);
+             	    var array = data[0];
+             	    for(var i=0; i<array.length; i++){
+             	    //alert(array[0].length);
+             	        $("#tableWithAll").append('<tr><td>' + array[i].name + '</td><td>' + array[i].surname + '</td><td>' + array[i].hit + '</td><td><button>Delete</button> <button>Modify</button></td></tr>');
+                    }
+                }
+
+     	});
+	});
+
+
+function home(){
+    window.location.href = "http://localhost:9000/"
+}

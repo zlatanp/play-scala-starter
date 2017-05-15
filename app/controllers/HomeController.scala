@@ -9,23 +9,13 @@ import model.Person
 import play.api.data.Form
 import play.api.data.Forms._
 import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
-import reactivemongo.play.json.collection.JSONCollection
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import play.api.libs.json._
-import play.api.libs.concurrent.Execution.Implicits.defaultContext
-import reactivemongo.api.ReadPreference
 import reactivemongo.play.json._
 import reactivemongo.play.json.collection.{JSONCollection, JsCursor}
 import JsCursor._
-import com.sun.xml.internal.ws.resources.AddressingMessages
 import reactivemongo.api.Cursor
-import reactivemongo.bson._
-import reactivemongo.api.collections.bson.BSONCollection
-
-import scala.concurrent.duration._
 import scala.concurrent.{Await, ExecutionContext, Future}
-import scala.util.{Failure, Success}
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -42,8 +32,28 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
    */
 
   val collectionF: Future[JSONCollection] = database.map(_.collection[JSONCollection]("artists"))
+  var list : String = "null"
 
   def index = Action {
+
+
+
+    val bla = collectionF.map{ coll =>
+      val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
+      val futurePersons : Future[List[Person]] = cursor.collect[List]()
+      val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
+        Json.arr(_)
+      }
+
+      futurePostsJsonArray.map{ personsjs => {
+        list = personsjs.toString()
+
+        Future(Ok(list))
+        print(list)
+      }
+      }
+
+    }
     Ok(views.html.index("Your new application is ready."))
   }
 
@@ -69,6 +79,19 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
         //no error
         person => {
           collectionF.map(_.insert(person))
+          val bla = collectionF.map{ coll =>
+            val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
+            val futurePersons : Future[List[Person]] = cursor.collect[List]()
+            val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
+              Json.arr(_)
+            }
+
+            futurePostsJsonArray.map{ personsjs => {
+              list = personsjs.toString()
+            }
+            }
+
+          }
           Future.successful(Ok(views.html.index(s"Artist ${person.name} added")))
         }
 
@@ -76,59 +99,10 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
   }
 
   def getPersons = Action.async {
-
     implicit request =>
-
-      var list : String = "d"
-
-    val bla = collectionF.map{ coll =>
-                      val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
-                      val futurePersons : Future[List[Person]] = cursor.collect[List]()
-                      val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
-                        Json.arr(_)
-                      }
-
-                      futurePostsJsonArray.map{ personsjs =>
-                        print(list)
-                      }
-
-      }
-      Await.result(bla, 5.seconds)
-      Future(Ok(list.toString))
+      Future(Ok(list))
   }
 
-  val str = null
-  val str2 = Option(str)
-
-
-//  def jsAll(collection: JSONCollection): Future[JsArray] = {
-//    type ResultType = JsObject // any type which is provided a `Writes[T]`
-//
-//    collection.find(Json.obj()).cursor[ResultType](ReadPreference.primary).jsArray()
-//  }
-
-//  def getPersons = Action.async {
-//    implicit request =>
-//
-//
-//      collectionF.onComplete {
-//        case Success(personList) =>  val svi = jsonFind(personList)
-//        case Failure(exception)  => println("greska")
-//      }
-//
-//
-//      //println(all)
-//      Future.successful(Ok(views.html.index("ss")))
-//  }
-//
-//  def jsonFind(coll: JSONCollection)(implicit ec: ExecutionContext): Unit = {
-//    coll.find(Json.obj()).cursor[JsObject](ReadPreference.primary).collect[List]().onComplete{
-//      case Success(personList) =>  println(personList)
-//      case Failure(exception)  => println("greska")
-//    }
-//
-//  }
-//}
 
 
 }
