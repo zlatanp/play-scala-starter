@@ -14,11 +14,10 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 
 # Post method to my controller
 
-POST    /addPerson                              controllers.HomeController.addPerson
+POST    /create                                         controllers.HomeController.createPerson()
 
+GET     /read                                           controllers.HomeController.readPersons()
 
-GET     /getPersons                             controllers.HomeController.getPersons
+PUT     /update/:name/:newName/:newSurname/:newHit      controllers.HomeController.updatePerson(name: String, newName: String, newSurname: String, newHit: String)
 
-DELETE  /delete/:name                           controllers.HomeController.deletePerson(name: String)
-
-PUT     /modify/:name/:newName/:newSurname/:newHit    controllers.HomeController.modify(name: String, newName: String, newSurname: String, newHit: String)
+DELETE  /delete/:name                                   controllers.HomeController.deletePerson(name: String)

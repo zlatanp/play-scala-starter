@@ -31,7 +31,7 @@ $(document).ready(function() {
     $("#tableWithAll").html('<tr><th>Name</th><th>Surname</th><th>Biggest Hit</th><th>Option</th></tr>');
 	 $.ajax({
              type: 'GET',
-             url: '/getPersons',
+             url: '/read',
              dataType: 'json',
              success: function(data){
              	console.log(data);
@@ -90,7 +90,7 @@ function modifyOne(name, surname, hit){
 
         $.ajax({
                 type: 'PUT',
-                url: '/modify/' + name + '/' + newName +'/' + newSurname + '/' + newHit,
+                url: '/update/' + name + '/' + newName +'/' + newSurname + '/' + newHit,
                 dataType: 'json',
                 success: function(data){
                     alert(name + " UPDATED!");

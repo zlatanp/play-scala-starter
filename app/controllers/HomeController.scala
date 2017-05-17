@@ -2,61 +2,34 @@ package controllers
 
 import javax.inject._
 
-import play.api._
-import play.api.mvc._
-import model.Person.personFormat
+import database.MongoDB
 import model.Person
+import play.api._
 import play.api.data.Form
 import play.api.data.Forms._
-import play.modules.reactivemongo.{MongoController, ReactiveMongoApi, ReactiveMongoComponents}
+import play.api.mvc._
+import play.modules.reactivemongo.ReactiveMongoApi
+
 import scala.concurrent.ExecutionContext.Implicits.global
-import play.api.libs.json._
-import reactivemongo.play.json._
-import reactivemongo.play.json.collection.{JSONCollection, JsCursor}
-import JsCursor._
-import reactivemongo.api.Cursor
-import scala.concurrent.{Await, ExecutionContext, Future}
-import reactivemongo.bson.BSONDocument
+import scala.concurrent.{ExecutionContext, Future}
+
 /**
- * This controller creates an `Action` to handle HTTP requests to the
- * application's home page.
- */
+  * This controller creates an `Action` to handle HTTP requests to the
+  * application's home page.
+  */
 @Singleton
-class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit ec:ExecutionContext)
-  extends Controller with MongoController with ReactiveMongoComponents {
+class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends MongoDB() {
 
   /**
-   * Create an Action to render an HTML page with a welcome message.
-   * The configuration in the `routes` file means that this method
-   * will be called when the application receives a `GET` request with
-   * a path of `/`.
-   */
+    * Create an Action to render an HTML page with a welcome message.
+    * The configuration in the `routes` file means that this method
+    * will be called when the application receives a `GET` request with
+    * a path of `/`.
+    */
 
-  val collectionF: Future[JSONCollection] = database.map(_.collection[JSONCollection]("artists"))
-  var list : String = "null"
 
   def index = Action {
-
-
-
-    val bla = collectionF.map{ coll =>
-      val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
-      val futurePersons : Future[List[Person]] = cursor.collect[List]()
-      val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
-        Json.arr(_)
-      }
-
-      futurePostsJsonArray.map{ personsjs => {
-        list = personsjs.toString()
-
-        Future(Ok(list))
-        print(list)
-        println()
-        println()
-      }
-      }
-
-    }
+    updateList()
     Ok(views.html.index("Your new application is ready."))
   }
 
@@ -68,7 +41,7 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
     )(Person.apply)(Person.unapply)
   }
 
-  def addPerson = Action.async {
+  def createPerson = Action.async {
 
     implicit request =>
       personForm.bindFromRequest().fold(
@@ -81,20 +54,8 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
 
         //no error
         person => {
-          collectionF.map(_.insert(person))
-          val bla = collectionF.map{ coll =>
-            val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
-            val futurePersons : Future[List[Person]] = cursor.collect[List]()
-            val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
-              Json.arr(_)
-            }
-
-            futurePostsJsonArray.map{ personsjs => {
-              list = personsjs.toString()
-            }
-            }
-
-          }
+          create(person)
+          updateList()
           //Future.successful(Ok(views.html.index(s"Artist ${person.name} added")))
           Future(Redirect(routes.HomeController.index()))
         }
@@ -102,45 +63,25 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
       )
   }
 
-  def getPersons = Action.async {
+  def readPersons = Action.async {
     implicit request =>
-      Future(Ok(list))
+      Future(Ok(read()))
+  }
+
+  def updatePerson(name: String, newName: String, newSurname: String, newHit: String) = Action.async {
+    implicit request =>
+      update(name, newName, newSurname, newHit)
+      Future(Ok(read()))
+
   }
 
 
   def deletePerson(name: String) = Action.async {
     implicit request =>
-      collectionF.map(_.findAndRemove(Json.obj("name" -> name)))
-
-      val bla = collectionF.map{ coll =>
-        val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
-        val futurePersons : Future[List[Person]] = cursor.collect[List]()
-        val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
-          Json.arr(_)
-        }
-
-        futurePostsJsonArray.map{ personsjs => {
-          list = personsjs.toString()
-        }
-        }
-
-      }
-
-      Future(Ok(list))
+      delete(name)
+      updateList()
+      Future(Ok(read()))
   }
-
-def modify(name: String, newName: String, newSurname: String, newHit: String) = Action.async{
-    implicit  request =>
-      val selector = BSONDocument("name" -> name)
-      val mod = BSONDocument("$set" -> BSONDocument("name" -> newName, "surname" -> newSurname, "hit" -> newHit))
-      collectionF.map(_.update(selector, mod))
-      println(newName)
-      println(newSurname)
-      println(newHit)
-
-    Future(Ok(list))
-
-}
 
 }
 
