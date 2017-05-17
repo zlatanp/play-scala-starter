@@ -29,7 +29,7 @@ class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit 
 
 
   def index = Action {
-    updateList()
+    read()
     Ok(views.html.index("Your new application is ready."))
   }
 
@@ -55,7 +55,7 @@ class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit 
         //no error
         person => {
           create(person)
-          updateList()
+          read()
           //Future.successful(Ok(views.html.index(s"Artist ${person.name} added")))
           Future(Redirect(routes.HomeController.index()))
         }
@@ -79,7 +79,6 @@ class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit 
   def deletePerson(name: String) = Action.async {
     implicit request =>
       delete(name)
-      updateList()
       Future(Ok(read()))
   }
 
