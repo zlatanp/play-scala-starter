@@ -16,6 +16,7 @@ import reactivemongo.play.json.collection.{JSONCollection, JsCursor}
 import JsCursor._
 import reactivemongo.api.Cursor
 import scala.concurrent.{Await, ExecutionContext, Future}
+import reactivemongo.bson.BSONDocument
 /**
  * This controller creates an `Action` to handle HTTP requests to the
  * application's home page.
@@ -50,6 +51,8 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
 
         Future(Ok(list))
         print(list)
+        println()
+        println()
       }
       }
 
@@ -92,7 +95,8 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
             }
 
           }
-          Future.successful(Ok(views.html.index(s"Artist ${person.name} added")))
+          //Future.successful(Ok(views.html.index(s"Artist ${person.name} added")))
+          Future(Redirect(routes.HomeController.index()))
         }
 
       )
@@ -104,6 +108,39 @@ class HomeController @Inject() (val reactiveMongoApi: ReactiveMongoApi)(implicit
   }
 
 
+  def deletePerson(name: String) = Action.async {
+    implicit request =>
+      collectionF.map(_.findAndRemove(Json.obj("name" -> name)))
+
+      val bla = collectionF.map{ coll =>
+        val cursor: Cursor[Person] = coll.find(Json.obj()).cursor[Person]()
+        val futurePersons : Future[List[Person]] = cursor.collect[List]()
+        val futurePostsJsonArray : Future[JsArray] = futurePersons.map {
+          Json.arr(_)
+        }
+
+        futurePostsJsonArray.map{ personsjs => {
+          list = personsjs.toString()
+        }
+        }
+
+      }
+
+      Future(Ok(list))
+  }
+
+def modify(name: String, newName: String, newSurname: String, newHit: String) = Action.async{
+    implicit  request =>
+      val selector = BSONDocument("name" -> name)
+      val mod = BSONDocument("$set" -> BSONDocument("name" -> newName, "surname" -> newSurname, "hit" -> newHit))
+      collectionF.map(_.update(selector, mod))
+      println(newName)
+      println(newSurname)
+      println(newHit)
+
+    Future(Ok(list))
+
+}
 
 }
 
