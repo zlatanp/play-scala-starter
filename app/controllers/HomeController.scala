@@ -8,7 +8,6 @@ import play.api._
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.mvc._
-import play.modules.reactivemongo.ReactiveMongoApi
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * application's home page.
   */
 @Singleton
-class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit ec: ExecutionContext) extends MongoDB() {
+class HomeController @Inject()(val mongo : MongoDB)(implicit ec: ExecutionContext) extends Controller{
 
   /**
     * Create an Action to render an HTML page with a welcome message.
@@ -29,7 +28,7 @@ class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit 
 
 
   def index = Action {
-    read()
+    mongo.read()
     Ok(views.html.index("Your new application is ready."))
   }
 
@@ -54,8 +53,8 @@ class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit 
 
         //no error
         person => {
-          create(person)
-          read()
+          mongo.create(person)
+          mongo.read()
           //Future.successful(Ok(views.html.index(s"Artist ${person.name} added")))
           Future(Redirect(routes.HomeController.index()))
         }
@@ -65,21 +64,20 @@ class HomeController @Inject()(val reactiveMongoApi: ReactiveMongoApi)(implicit 
 
   def readPersons = Action.async {
     implicit request =>
-      Future(Ok(read()))
+      Future(Ok(mongo.read()))
   }
 
   def updatePerson(name: String, newName: String, newSurname: String, newHit: String) = Action.async {
     implicit request =>
-      update(name, newName, newSurname, newHit)
-      Future(Ok(read()))
+      mongo.update(name, newName, newSurname, newHit)
+      Future(Ok(mongo.read()))
 
   }
 
-
   def deletePerson(name: String) = Action.async {
     implicit request =>
-      delete(name)
-      Future(Ok(read()))
+      mongo.delete(name)
+      Future(Ok(mongo.read()))
   }
 
 }
